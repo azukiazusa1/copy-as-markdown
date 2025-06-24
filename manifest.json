@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Copy as Markdown",
+  "version": "1.0",
+  "description": "ページ内の記事をマークダウン形式でコピーします",
+  "permissions": [
+    "activeTab",
+    "clipboardWrite"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Copy as Markdown"
+  }
+}
