@@ -6,10 +6,16 @@
     "build": "npm run clean && tsc && cp src/*.html dist/ && cp src/*.css dist/ && zip -r copy-as-markdown-v$(node -p \"require('./package.json').version\").zip manifest.json dist/ icons/ --exclude='*.DS_Store'",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "clean": "rm -rf dist"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
-    "@types/chrome": "^0.0.260"
+    "@types/chrome": "^0.0.260",
+    "vitest": "^1.0.0",
+    "jsdom": "^23.0.0",
+    "@vitest/ui": "^1.0.0"
   }
 }
