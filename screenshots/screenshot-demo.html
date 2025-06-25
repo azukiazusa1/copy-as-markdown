@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1280, initial-scale=1.0">
+    <title>Copy as Markdown Screenshot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 1280px;
+            height: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 90%;
+            height: 80%;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        
+        .sidebar {
+            width: 350px;
+            background: #f8f9fa;
+            border-left: 1px solid #e9ecef;
+            padding: 0;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            color: #34495e;
+            font-size: 24px;
+            margin: 30px 0 15px 0;
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        strong { color: #e74c3c; }
+        code { 
+            background: #f1f2f6; 
+            padding: 2px 6px; 
+            border-radius: 3px; 
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .extension-popup {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            width: 320px;
+            margin: 20px;
+            overflow: hidden;
+        }
+        
+        .popup-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .popup-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .popup-content {
+            padding: 25px;
+        }
+        
+        .copy-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        
+        .copy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+        
+        .info-text {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #6c757d;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #6c757d;
+        }
+        
+        .highlight {
+            background: rgba(255, 235, 59, 0.3);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .browser-frame {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .traffic-lights {
+            display: flex;
+            gap: 8px;
+            margin-right: 15px;
+        }
+        
+        .light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .red { background: #ff5f57; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #28ca42; }
+        
+        .url-bar {
+            flex: 1;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="browser-frame">
+        <div class="traffic-lights">
+            <div class="light red"></div>
+            <div class="light yellow"></div>
+            <div class="light green"></div>
+        </div>
+        <div class="url-bar">📄 Copy as Markdown - Chrome Extension Demo</div>
+    </div>
+    
+    <div class="container" style="margin-top: 40px;">
+        <div class="content-area">
+            <h1>🚀 Chrome拡張機能の革新</h1>
+            
+            <p>この記事では、<strong class="highlight">Copy as Markdown</strong>拡張機能の素晴らしい機能について詳しく解説します。<span class="highlight">Webページの記事を瞬時にMarkdown形式に変換</span>できる画期的なツールです。</p>
+
+            <h2>✨ 主な特徴</h2>
+            <ul>
+                <li>📝 <code>&lt;article&gt;</code>タグの自動検出と抽出</li>
+                <li>🔄 HTMLからMarkdownへの高精度変換</li>
+                <li>📋 ワンクリックでクリップボードにコピー</li>
+                <li>🌏 完全な日本語サポート</li>
+                <li>⚡ 超高速処理でストレスフリー</li>
+            </ul>
+
+            <h2>🛠 技術的な優位性</h2>
+            <p>Manifest V3の最新仕様に完全対応し、<strong>セキュリティファースト</strong>の設計思想で開発されています。必要最小限の権限のみを要求し、ユーザーのプライバシーを最大限保護します。</p>
+
+            <p>従来のコピー&ペースト作業が<span class="highlight">劇的に効率化</span>され、ブログ執筆や技術文書作成の生産性が大幅に向上します。</p>
+        </div>
+        
+        <div class="sidebar">
+            <div class="extension-popup">
+                <div class="popup-header">
+                    <h3>📋 Copy as Markdown</h3>
+                </div>
+                <div class="popup-content">
+                    <button class="copy-button">
+                        <span style="font-size: 20px;">📋</span>
+                        <span>記事をコピー</span>
+                    </button>
+                    
+                    <div class="info-text">
+                        このページの記事（&lt;article&gt; または &lt;main&gt; タグ内）をマークダウン形式でクリップボードにコピーします。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
