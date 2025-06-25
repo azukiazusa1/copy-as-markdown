@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // スクリプトを動的にインジェクション
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        files: ["content.js"],
+        files: ["src/content.js"],
       });
 
       const response = await chrome.tabs.sendMessage(tab.id, {

@@ -1,5 +1,8 @@
 {
   "name": "copy-as-markdown",
   "version": "0.0.1",
-  "description": "Chrome extension for copying articles as Markdown"
+  "description": "Chrome extension for copying articles as Markdown",
+  "scripts": {
+    "build": "zip -r copy-as-markdown-v$(node -p \"require('./package.json').version\").zip manifest.json src/ icons/ --exclude='*.DS_Store'"
+  }
 }
