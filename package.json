@@ -11,8 +11,8 @@
     "test:run": "vitest run",
     "lint": "oxlint src/",
     "lint:fix": "oxlint src/ --fix",
-    "format": "prettier --write src/**/*.{ts,js,html,css,json}",
-    "format:check": "prettier --check src/**/*.{ts,js,html,css,json}",
+    "format": "prettier --write \"src/**/*.{ts,html,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,html,css}\"",
     "clean": "rm -rf dist"
   },
   "devDependencies": {
