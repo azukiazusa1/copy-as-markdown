@@ -3,12 +3,16 @@
   "version": "0.0.1",
   "description": "Chrome extension for copying articles as Markdown",
   "scripts": {
-    "build": "npm run clean && tsc && cp src/*.html dist/ && cp src/*.css dist/ && zip -r copy-as-markdown-v$(node -p \"require('./package.json').version\").zip manifest.json dist/ icons/ --exclude='*.DS_Store'",
+    "build": "npm run clean && npm run lint && npm run typecheck && npm run format && tsc && cp src/*.html dist/ && cp src/*.css dist/ && zip -r copy-as-markdown-v$(node -p \"require('./package.json').version\").zip manifest.json dist/ icons/ --exclude='*.DS_Store'",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
+    "lint": "oxlint src/",
+    "lint:fix": "oxlint src/ --fix",
+    "format": "prettier --write src/**/*.{ts,js,html,css,json}",
+    "format:check": "prettier --check src/**/*.{ts,js,html,css,json}",
     "clean": "rm -rf dist"
   },
   "devDependencies": {
@@ -16,6 +20,8 @@
     "@types/chrome": "^0.0.260",
     "vitest": "^1.0.0",
     "jsdom": "^23.0.0",
-    "@vitest/ui": "^1.0.0"
+    "@vitest/ui": "^1.0.0",
+    "oxlint": "^0.9.0",
+    "prettier": "^3.0.0"
   }
 }

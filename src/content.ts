@@ -11,9 +11,9 @@ interface MessageResponse {
 class MarkdownConverter {
   convertHtmlToMarkdown(element: Element | null): string {
     if (!element) return '';
-    
+
     let markdown = '';
-    
+
     for (const node of Array.from(element.childNodes)) {
       if (node.nodeType === Node.TEXT_NODE) {
         markdown += (node.textContent || '').trim();
@@ -21,23 +21,23 @@ class MarkdownConverter {
         markdown += this.convertElement(node as Element);
       }
     }
-    
+
     return markdown.replace(/\n{3,}/g, '\n\n').trim();
   }
-  
+
   convertElement(element: Element): string {
     const tagName = element.tagName.toLowerCase();
     const text = (element.textContent || '').trim();
-    
+
     // Special handling for self-closing elements that don't have text content
     if (tagName === 'img') {
       const src = element.getAttribute('src');
       const alt = element.getAttribute('alt') || '';
       return src ? `![${alt}](${src})` : '';
     }
-    
+
     if (!text) return '';
-    
+
     switch (tagName) {
       case 'h1':
         return `\n\n# ${text}\n\n`;
@@ -85,24 +85,26 @@ class MarkdownConverter {
         return this.convertHtmlToMarkdown(element);
     }
   }
-  
+
   convertList(listElement: Element, marker: string): string {
     const items = Array.from(listElement.querySelectorAll('li'));
-    return items.map((item, index) => {
-      const listMarker = marker === '1.' ? `${index + 1}.` : marker;
-      const content = this.convertHtmlToMarkdown(item);
-      return `${listMarker} ${content}`;
-    }).join('\n');
+    return items
+      .map((item, index) => {
+        const listMarker = marker === '1.' ? `${index + 1}.` : marker;
+        const content = this.convertHtmlToMarkdown(item);
+        return `${listMarker} ${content}`;
+      })
+      .join('\n');
   }
 }
 
 function extractArticleContent(): string {
   let articleElement: Element | null = document.querySelector('article');
-  
+
   if (!articleElement) {
     articleElement = document.querySelector('main');
   }
-  
+
   if (!articleElement) {
     const contentSelectors = [
       '[role="main"]',
@@ -110,40 +112,43 @@ function extractArticleContent(): string {
       '.article',
       '.post',
       '#content',
-      '#main'
+      '#main',
     ];
-    
+
     for (const selector of contentSelectors) {
       articleElement = document.querySelector(selector);
       if (articleElement) break;
     }
   }
-  
+
   if (!articleElement) {
     articleElement = document.body;
   }
-  
+
   const converter = new MarkdownConverter();
   return converter.convertHtmlToMarkdown(articleElement);
 }
 
 // Only add listener if not in test environment
 if (typeof chrome !== 'undefined' && chrome.runtime) {
-  chrome.runtime.onMessage.addListener((
-    request: MessageRequest,
-    sender: chrome.runtime.MessageSender,
-    sendResponse: (response: MessageResponse) => void
-  ): void => {
-    if (request.action === 'extractContent') {
-      try {
-        const markdown = extractArticleContent();
-        sendResponse({ success: true, content: markdown });
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        sendResponse({ success: false, error: errorMessage });
+  chrome.runtime.onMessage.addListener(
+    (
+      request: MessageRequest,
+      sender: chrome.runtime.MessageSender,
+      sendResponse: (response: MessageResponse) => void
+    ): void => {
+      if (request.action === 'extractContent') {
+        try {
+          const markdown = extractArticleContent();
+          sendResponse({ success: true, content: markdown });
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : 'Unknown error';
+          sendResponse({ success: false, error: errorMessage });
+        }
       }
     }
-  });
+  );
 }
 
 // In-source tests
@@ -261,7 +266,7 @@ if (import.meta.vitest) {
       it('should convert mixed content', () => {
         const div = document.createElement('div');
         div.innerHTML = '<h1>Title</h1><p>Some <strong>bold</strong> text.</p>';
-        
+
         const result = converter.convertHtmlToMarkdown(div);
         expect(result).toContain('# Title');
         expect(result).toContain('**bold**');

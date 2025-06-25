@@ -6,33 +6,33 @@ interface MessageResponse {
 
 // Define functions at module level for testing
 function showStatus(message: string, isError: boolean = false): void {
-  const statusDiv = document.getElementById("status") as HTMLDivElement;
+  const statusDiv = document.getElementById('status') as HTMLDivElement;
   if (statusDiv) {
     statusDiv.textContent = message;
-    statusDiv.className = `status ${isError ? "error" : "success"}`;
-    statusDiv.classList.remove("hidden");
+    statusDiv.className = `status ${isError ? 'error' : 'success'}`;
+    statusDiv.classList.remove('hidden');
 
     function hideStatus(): void {
-      statusDiv.classList.add("hidden");
+      statusDiv.classList.add('hidden');
     }
     setTimeout(hideStatus, 3000);
   }
 }
 
 function updateButtonState(isLoading: boolean = false): void {
-  const copyButton = document.getElementById("copyButton") as HTMLButtonElement;
+  const copyButton = document.getElementById('copyButton') as HTMLButtonElement;
   if (copyButton) {
-    const icon = copyButton.querySelector(".icon") as HTMLSpanElement;
-    const text = copyButton.querySelector(".text") as HTMLSpanElement;
+    const icon = copyButton.querySelector('.icon') as HTMLSpanElement;
+    const text = copyButton.querySelector('.text') as HTMLSpanElement;
 
     if (isLoading) {
       copyButton.disabled = true;
-      if (icon) icon.textContent = "⏳";
-      if (text) text.textContent = "処理中...";
+      if (icon) icon.textContent = '⏳';
+      if (text) text.textContent = '処理中...';
     } else {
       copyButton.disabled = false;
-      if (icon) icon.textContent = "📋";
-      if (text) text.textContent = "記事をコピー";
+      if (icon) icon.textContent = '📋';
+      if (text) text.textContent = '記事をコピー';
     }
   }
 }
@@ -41,18 +41,18 @@ async function copyToClipboard(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text);
     return true;
-  } catch (error) {
-    const textArea = document.createElement("textarea");
+  } catch {
+    const textArea = document.createElement('textarea');
     textArea.value = text;
-    textArea.style.position = "fixed";
-    textArea.style.left = "-9999px";
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
     document.body.appendChild(textArea);
     textArea.select();
 
     try {
-      document.execCommand("copy");
+      document.execCommand('copy');
       return true;
-    } catch (fallbackError) {
+    } catch {
       return false;
     } finally {
       document.body.removeChild(textArea);
@@ -60,11 +60,11 @@ async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function (): void {
-  const copyButton = document.getElementById("copyButton") as HTMLButtonElement;
+document.addEventListener('DOMContentLoaded', function (): void {
+  const copyButton = document.getElementById('copyButton') as HTMLButtonElement;
   if (!copyButton) return;
 
-  copyButton.addEventListener("click", async function (): Promise<void> {
+  copyButton.addEventListener('click', async function (): Promise<void> {
     updateButtonState(true);
 
     try {
@@ -74,37 +74,38 @@ document.addEventListener("DOMContentLoaded", function (): void {
       });
 
       if (!tab.id) {
-        throw new Error("タブIDが見つかりません");
+        throw new Error('タブIDが見つかりません');
       }
 
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        files: ["dist/content.js"],
+        files: ['dist/content.js'],
       });
 
       const response: MessageResponse = await chrome.tabs.sendMessage(tab.id, {
-        action: "extractContent",
+        action: 'extractContent',
       });
 
       if (response.success && response.content) {
         const success = await copyToClipboard(response.content);
 
         if (success) {
-          showStatus("マークダウンをクリップボードにコピーしました！");
+          showStatus('マークダウンをクリップボードにコピーしました！');
 
           function closeWindow(): void {
             window.close();
           }
           setTimeout(closeWindow, 1500);
         } else {
-          showStatus("クリップボードへのコピーに失敗しました", true);
+          showStatus('クリップボードへのコピーに失敗しました', true);
         }
       } else {
-        showStatus(`エラー: ${response.error || "不明なエラー"}`, true);
+        showStatus(`エラー: ${response.error || '不明なエラー'}`, true);
       }
     } catch (error) {
-      console.error("Error during content extraction:", error);
-      const errorMessage = error instanceof Error ? error.message : "不明なエラーが発生しました";
+      console.error('Error during content extraction:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : '不明なエラーが発生しました';
       showStatus(errorMessage, true);
     } finally {
       updateButtonState(false);
@@ -117,7 +118,7 @@ if (import.meta.vitest) {
   const { describe, it, expect, beforeEach, vi } = import.meta.vitest;
 
   // Mock Chrome APIs for testing
-  global.chrome = {
+  (global as any).chrome = {
     runtime: {
       onMessage: {
         addListener: vi.fn(),
@@ -161,8 +162,8 @@ if (import.meta.vitest) {
         </div>
       `;
 
-      copyButton = document.getElementById("copyButton") as HTMLButtonElement;
-      statusDiv = document.getElementById("status") as HTMLDivElement;
+      copyButton = document.getElementById('copyButton') as HTMLButtonElement;
+      statusDiv = document.getElementById('status') as HTMLDivElement;
 
       // Reset mocks
       vi.clearAllMocks();
@@ -180,7 +181,9 @@ if (import.meta.vitest) {
       });
 
       it('should fallback to document.execCommand when clipboard API fails', async () => {
-        const mockWriteText = vi.fn().mockRejectedValue(new Error('Clipboard not available'));
+        const mockWriteText = vi
+          .fn()
+          .mockRejectedValue(new Error('Clipboard not available'));
         const mockExecCommand = vi.fn().mockReturnValue(true);
         navigator.clipboard.writeText = mockWriteText;
         document.execCommand = mockExecCommand;
@@ -193,7 +196,9 @@ if (import.meta.vitest) {
       });
 
       it('should return false when both methods fail', async () => {
-        const mockWriteText = vi.fn().mockRejectedValue(new Error('Clipboard not available'));
+        const mockWriteText = vi
+          .fn()
+          .mockRejectedValue(new Error('Clipboard not available'));
         const mockExecCommand = vi.fn().mockImplementation(() => {
           throw new Error('execCommand failed');
         });
@@ -229,10 +234,10 @@ if (import.meta.vitest) {
         updateButtonState(true);
 
         expect(copyButton.disabled).toBe(true);
-        
+
         const icon = copyButton.querySelector('.icon');
         const text = copyButton.querySelector('.text');
-        
+
         expect(icon?.textContent).toBe('⏳');
         expect(text?.textContent).toBe('処理中...');
       });
@@ -241,10 +246,10 @@ if (import.meta.vitest) {
         updateButtonState(false);
 
         expect(copyButton.disabled).toBe(false);
-        
+
         const icon = copyButton.querySelector('.icon');
         const text = copyButton.querySelector('.text');
-        
+
         expect(icon?.textContent).toBe('📋');
         expect(text?.textContent).toBe('記事をコピー');
       });

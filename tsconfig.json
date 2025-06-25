@@ -15,7 +15,7 @@
     "declaration": false,
     "removeComments": true,
     "noEmitOnError": true,
-    "types": ["vitest/importMeta"]
+    "types": ["vitest/importMeta", "chrome"]
   },
   "include": [
     "src/**/*"
