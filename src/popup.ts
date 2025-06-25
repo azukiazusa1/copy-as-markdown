@@ -1,21 +1,27 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const copyButton = document.getElementById("copyButton");
-  const statusDiv = document.getElementById("status");
+interface MessageResponse {
+  success: boolean;
+  content?: string;
+  error?: string;
+}
 
-  function showStatus(message, isError = false) {
+document.addEventListener("DOMContentLoaded", function (): void {
+  const copyButton = document.getElementById("copyButton") as HTMLButtonElement;
+  const statusDiv = document.getElementById("status") as HTMLDivElement;
+
+  function showStatus(message: string, isError: boolean = false): void {
     statusDiv.textContent = message;
     statusDiv.className = `status ${isError ? "error" : "success"}`;
     statusDiv.classList.remove("hidden");
 
-    function hideStatus() {
+    function hideStatus(): void {
       statusDiv.classList.add("hidden");
     }
     setTimeout(hideStatus, 3000);
   }
 
-  function updateButtonState(isLoading = false) {
-    const icon = copyButton.querySelector(".icon");
-    const text = copyButton.querySelector(".text");
+  function updateButtonState(isLoading: boolean = false): void {
+    const icon = copyButton.querySelector(".icon") as HTMLSpanElement;
+    const text = copyButton.querySelector(".text") as HTMLSpanElement;
 
     if (isLoading) {
       copyButton.disabled = true;
@@ -28,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  async function copyToClipboard(text) {
+  async function copyToClipboard(text: string): Promise<boolean> {
     try {
       await navigator.clipboard.writeText(text);
       return true;
@@ -51,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  copyButton.addEventListener("click", async function () {
+  copyButton.addEventListener("click", async function (): Promise<void> {
     updateButtonState(true);
 
     try {
@@ -60,23 +66,26 @@ document.addEventListener("DOMContentLoaded", function () {
         currentWindow: true,
       });
 
-      // スクリプトを動的にインジェクション
+      if (!tab.id) {
+        throw new Error("タブIDが見つかりません");
+      }
+
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        files: ["src/content.js"],
+        files: ["dist/content.js"],
       });
 
-      const response = await chrome.tabs.sendMessage(tab.id, {
+      const response: MessageResponse = await chrome.tabs.sendMessage(tab.id, {
         action: "extractContent",
       });
 
-      if (response.success) {
+      if (response.success && response.content) {
         const success = await copyToClipboard(response.content);
 
         if (success) {
           showStatus("マークダウンをクリップボードにコピーしました！");
 
-          function closeWindow() {
+          function closeWindow(): void {
             window.close();
           }
           setTimeout(closeWindow, 1500);
@@ -84,12 +93,12 @@ document.addEventListener("DOMContentLoaded", function () {
           showStatus("クリップボードへのコピーに失敗しました", true);
         }
       } else {
-        showStatus(`エラー: ${response.error}`, true);
+        showStatus(`エラー: ${response.error || "不明なエラー"}`, true);
       }
     } catch (error) {
       console.error("Error during content extraction:", error);
-      console.error("Copy failed:", error);
-      showStatus(error, true);
+      const errorMessage = error instanceof Error ? error.message : "不明なエラーが発生しました";
+      showStatus(errorMessage, true);
     } finally {
       updateButtonState(false);
     }

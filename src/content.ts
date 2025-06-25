@@ -1,23 +1,33 @@
+interface MessageRequest {
+  action: string;
+}
+
+interface MessageResponse {
+  success: boolean;
+  content?: string;
+  error?: string;
+}
+
 class MarkdownConverter {
-  convertHtmlToMarkdown(element) {
+  convertHtmlToMarkdown(element: Element | null): string {
     if (!element) return '';
     
     let markdown = '';
     
-    for (const node of element.childNodes) {
+    for (const node of Array.from(element.childNodes)) {
       if (node.nodeType === Node.TEXT_NODE) {
-        markdown += node.textContent.trim();
+        markdown += (node.textContent || '').trim();
       } else if (node.nodeType === Node.ELEMENT_NODE) {
-        markdown += this.convertElement(node);
+        markdown += this.convertElement(node as Element);
       }
     }
     
     return markdown.replace(/\n{3,}/g, '\n\n').trim();
   }
   
-  convertElement(element) {
+  convertElement(element: Element): string {
     const tagName = element.tagName.toLowerCase();
-    const text = element.textContent.trim();
+    const text = (element.textContent || '').trim();
     
     if (!text) return '';
     
@@ -69,7 +79,7 @@ class MarkdownConverter {
     }
   }
   
-  convertList(listElement, marker) {
+  convertList(listElement: Element, marker: string): string {
     const items = Array.from(listElement.querySelectorAll('li'));
     return items.map((item, index) => {
       const listMarker = marker === '1.' ? `${index + 1}.` : marker;
@@ -79,8 +89,8 @@ class MarkdownConverter {
   }
 }
 
-function extractArticleContent() {
-  let articleElement = document.querySelector('article');
+function extractArticleContent(): string {
+  let articleElement: Element | null = document.querySelector('article');
   
   if (!articleElement) {
     articleElement = document.querySelector('main');
@@ -110,13 +120,18 @@ function extractArticleContent() {
   return converter.convertHtmlToMarkdown(articleElement);
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((
+  request: MessageRequest,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response: MessageResponse) => void
+): void => {
   if (request.action === 'extractContent') {
     try {
       const markdown = extractArticleContent();
       sendResponse({ success: true, content: markdown });
     } catch (error) {
-      sendResponse({ success: false, error: error.message });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      sendResponse({ success: false, error: errorMessage });
     }
   }
 });
